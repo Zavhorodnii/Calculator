@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
             }
             createNewBlock = false;
         }else {
+            System.out.println("calculateTextView.getText() " + calculateTextView.getText());
             if (calculateTextView.getText().equals("0")) {
                 if (button.getText().equals(".")) {
                     calculateTextView.setText("0.");
@@ -147,6 +148,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             else {
+                if (calculateTextView.getText().length() == 2 && button.getText().equals(".")) {
+                    calculateTextView.setText(calculateTextView.getText() + "0");
+                    operand_1 = "0";
+                }
                 operand_1 += (String) button.getText();
                 calculateTextView.setText((String) calculateTextView.getText() + (String) button.getText());
             }
