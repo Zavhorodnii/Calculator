@@ -135,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
             }
             createNewBlock = false;
         }else {
-            System.out.println("calculateTextView.getText() " + calculateTextView.getText());
             if (calculateTextView.getText().equals("0")) {
                 if (button.getText().equals(".")) {
                     calculateTextView.setText("0.");
@@ -183,6 +182,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (operation.equals("+") || operation.equals("-") || operation.equals("*") || operation.equals("/") || operation.equals("%") || operation.equals("^")){
+            if (blockCalculate == null)
+                return;
             clearButton.setText("C");
             sign = operation;
             String lastOperation = (String) calculateTextView.getText();
@@ -205,60 +206,62 @@ public class MainActivity extends AppCompatActivity {
         else
             switch (operation){
                 case "D":
-                    if (sign.equals("=") || calculateTextView.getText().equals("0"))
-                        break;
-                    if (((String)calculateTextView.getText()).length() > 0) {
-                        if (!sign.equals("")){
-                            if (((String)calculateTextView.getText()).length() > 2) {
-                                System.out.println("> 2");
-                                String deletelastSimbol = (String) calculateTextView.getText();
-                                calculateTextView.setText(deletelastSimbol.substring(0, deletelastSimbol.length() - 1));
-                                if(operand_1.length() > 1) {
-                                    System.out.println("> 0");
-                                    System.out.println("operand_1== " + operand_1);
-                                    operand_1 = operand_1.substring(0, operand_1.length() - 1);
-                                } else {
-                                    System.out.println("== 0");
-                                    operand_1 = "0";
+                    try {
+                        if (sign.equals("=") || calculateTextView.getText().equals("0"))
+                            break;
+                        if (((String)calculateTextView.getText()).length() > 0) {
+                            if (!sign.equals("")){
+                                if (((String)calculateTextView.getText()).length() > 2) {
+                                    System.out.println("> 2");
+                                    String deletelastSimbol = (String) calculateTextView.getText();
+                                    calculateTextView.setText(deletelastSimbol.substring(0, deletelastSimbol.length() - 1));
+                                    if(operand_1.length() > 1) {
+                                        System.out.println("> 0");
+                                        System.out.println("operand_1== " + operand_1);
+                                        operand_1 = operand_1.substring(0, operand_1.length() - 1);
+                                    } else {
+                                        System.out.println("== 0");
+                                        operand_1 = "0";
+                                    }
+                                }else {
+                                    if (blockCalculate.textViewArrayList.size() > 0) {
+                                        String text = (String) blockCalculate.textViewArrayList.get(blockCalculate.textViewArrayList.size() - 1).getText();
+                                        calculateTextView.setText(text);
+                                        if (blockCalculate.textViewArrayList.size() > 1) {
+                                            String spl[] = text.split(" ");
+                                            operand_2 = blockCalculate.resultList.get(blockCalculate.resultList.size()-2);
+                                            operand_1 = spl[1];
+                                            blockCalculate.resultList.remove(blockCalculate.resultList.size()-1);
+                                        } else
+                                            operand_1 = text;
+                                        linearLayout.removeView(blockCalculate.textViewArrayList.get(blockCalculate.textViewArrayList.size() - 1));
+                                        blockCalculate.textViewArrayList.remove(blockCalculate.textViewArrayList.size() - 1);
+                                    }
+                                    if (blockCalculate.operationSign.size()> 1) {
+                                        sign = blockCalculate.operationSign.get(blockCalculate.operationSign.size() - 2);
+                                        blockCalculate.operationSign.remove(blockCalculate.operationSign.size() - 1);
+                                    } else {
+                                        blockCalculate.operationSign.clear();
+                                        sign = "";
+                                        operand_1 = (String) calculateTextView.getText();
+                                        operand_2 = "0";
+                                    }
                                 }
                             }else {
-                                if (blockCalculate.textViewArrayList.size() > 0) {
-                                    String text = (String) blockCalculate.textViewArrayList.get(blockCalculate.textViewArrayList.size() - 1).getText();
-                                    calculateTextView.setText(text);
-                                    if (blockCalculate.textViewArrayList.size() > 1) {
-                                        String spl[] = text.split(" ");
-                                        operand_2 = blockCalculate.resultList.get(blockCalculate.resultList.size()-2);
-                                        operand_1 = spl[1];
-                                        blockCalculate.resultList.remove(blockCalculate.resultList.size()-1);
-                                    } else
-                                        operand_1 = text;
-                                    linearLayout.removeView(blockCalculate.textViewArrayList.get(blockCalculate.textViewArrayList.size() - 1));
-                                    blockCalculate.textViewArrayList.remove(blockCalculate.textViewArrayList.size() - 1);
-                                }
-                                if (blockCalculate.operationSign.size()> 1) {
-                                    sign = blockCalculate.operationSign.get(blockCalculate.operationSign.size() - 2);
-                                    blockCalculate.operationSign.remove(blockCalculate.operationSign.size() - 1);
-                                } else {
-                                    blockCalculate.operationSign.clear();
-                                    sign = "";
-                                    operand_1 = (String) calculateTextView.getText();
-                                    operand_2 = "0";
+                                String deletelastSimbol = (String) calculateTextView.getText();
+                                calculateTextView.setText(deletelastSimbol.substring(0, deletelastSimbol.length() - 1));
+                                if(operand_1.length() > 0)
+                                    operand_1 = operand_1.substring(0, operand_1.length() - 1);
+                                if (operand_1.length() == 0) {
+                                    calculateTextView.setText("0");
+                                    operand_1 = "0";
                                 }
                             }
                         }else {
-                            String deletelastSimbol = (String) calculateTextView.getText();
-                            calculateTextView.setText(deletelastSimbol.substring(0, deletelastSimbol.length() - 1));
-                            if(operand_1.length() > 0)
-                                operand_1 = operand_1.substring(0, operand_1.length() - 1);
-                            if (operand_1.length() == 0) {
-                                calculateTextView.setText("0");
-                                operand_1 = "0";
-                            }
+                            calculateTextView.setText("0");
                         }
-                    }else {
-                        calculateTextView.setText("0");
-                    }
-                     calculate();
+                         calculate();
+                    } catch (Exception axe){}
                     break;
                 case "C":
                     try {
